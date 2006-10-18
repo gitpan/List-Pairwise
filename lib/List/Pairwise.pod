@@ -1,0 +1,172 @@
+=head1 NAME
+
+List::Pairwise - map/grep arrays and hashes pairwise
+
+=head1 SYNOPSIS
+
+    use List::Pairwise qw(mapp grepp);
+    
+    my %a = (
+        snoogy1  => 4,
+        snoogy2  => 2, 
+        NOT      => 4,
+        snoogy3  => 5,
+        hehe     => 12,
+    );
+    
+    # keys/values emulation (only slower)
+    my @keys = mapp {$a} %a;
+    my @values = mapp {$b} %a;
+    
+    # reverse hash (does not work in-place)
+    my %reverse_a = mapp {$b, $a} %a;
+    
+    # reverse array pairs in-place
+    my @a = %a;
+    mapp { ($a, $b) = ($b, $a) } @a;
+    
+    # modify values in-place
+    mapp {$b++} %a;
+    
+    # modify keys (does not work in-place)
+    %a = mapp {lc($a) => $b} %a;
+    
+    # grep hash subset
+    my %subset1 = grepp {$a =~ /snoogy/} %a;
+    my %subset2 = grepp {$b < 5} %a;
+    
+    # grep some specific values
+    my @snoog_values = mapp {$b} grepp {$a =~ /snoogy/} %a;
+    # This does not work:
+    # values grepp {$a =~ /snoogy/} %a; # values() expects a real hash
+
+=head1 DESCRIPTION
+
+C<List::Pairwise> provides functions to map and grep lists two elements at a time
+
+=over 4
+
+=item mapp BLOCK LIST
+
+=item map_pairwise BLOCK LIST
+
+Evaluates the BLOCK for each pair of LIST (locally
+setting $a and $b to each pair) and returns the list value composed
+of the results of each such evaluation.
+mapp will croak if LIST has an odd number of elements. In scalar context,
+returns the total number of elements so generated (not pairs). Evaluates
+BLOCK or EXPR in list context, so each element of LIST may
+produce zero, one, or more elements in the returned value.
+
+Note that $a and $b are aliases to the list elements, so they can be used to
+modify the elements of the LIST, exept for hash keys ($a when LIST is a hash).
+
+C<map_pairwise> is an alias for C<mapp>.
+
+keys/values emulation (only slower) :
+
+    my @keys = mapp {$a} %a;
+    my @values = mapp {$b} %a;
+
+copy (only slower) :
+
+    my %b = mapp {$a, $b} %a;
+
+modify values in-place :
+
+    mapp {$b = lc($b)} %a;
+
+modifying hash keys in-place does not work with a hash :
+
+    mapp {$a = lc($a)} %a; # wrong
+
+modify array "keys" in-place :
+
+    my @a = %a;
+    mapp {$a = lc($a)} @a;
+
+modify keys and copy :
+
+    %a = mapp {lc($a) => $b} %a;
+
+reverse hash (does not work in-place) :
+
+    my %reverse_a = mapp {$b, $a} %a;
+
+reverse array pairs in-place :
+
+    my @a = %a;
+    mapp { ($a, $b) = ($b, $a) } @a;
+
+=item grepp BLOCK LIST
+
+=item grep_pairwise BLOCK LIST
+
+Evaluates the BLOCK for each pair of LIST (locally
+setting $a and $b to each pair) and returns the list value
+consisting of those pairs for which the expression evaluated
+to true. grepp will croak if LIST has an odd number of elements. 
+In scalar context, returns the number of valid pairs, ie the
+number of times the expression was true.
+
+So we have this equalisty:
+
+    (grepp BLOCK LIST) == 1/2 * scalar(my @a = (grepp BLOCK LIST))
+
+Note that $a and $b are aliases to the list elements, so they can be used to
+modify the elements of the LIST, exept for hash keys ($a when LIST is a hash).
+
+C<grep_pairwise> is an alias for C<grepp>.
+
+grep hash subset :
+
+    my %subset1 = grepp {$a =~ /snoogy/} %a;
+    my %subset2 = grepp {$b < 5} %a;
+
+=item firstp BLOCK LIST
+
+=item first_pairwise BLOCK LIST
+
+Evaluates the BLOCK for each pair of LIST (locally
+setting $a and $b to each pair) and returns the first pair for
+which the expression evaluated to true. firstp will croak if LIST
+has an odd number of elements. 
+In scalar context, returns 1 if a valid pair was found.
+
+=item lastp BLOCK LIST
+
+=item last_pairwise BLOCK LIST
+
+Evaluates the BLOCK for each pair of LIST (locally
+setting $a and $b to each pair) and returns the last pair for
+which the expression evaluated to true. lastp will croak if LIST
+has an odd number of elements. 
+In scalar context, returns 1 if a valid pair was found.
+
+=back
+
+=head1 TODO
+
+=over 4
+
+=item * XS implementation
+
+=back
+
+=head1 SEE ALSO
+
+L<List::MoreUtils>, L<List::Util>, C<grep>, C<map>
+
+=head1 AUTHOR
+
+Thomas Drugeon, E<lt>tdrugeon@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2006 by Thomas Drugeon
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself, either Perl version 5.8.8 or,
+at your option, any later version of Perl 5 you may have available.
+
+=cut

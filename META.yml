@@ -1,0 +1,15 @@
+abstract: map/grep arrays and hashes pairwise
+author: Thomas Drugeon, <tdrugeon@cpan.org>
+build_requires: 
+  Test::More: 0.42
+distribution_type: module
+generated_by: Module::Install version 0.63
+license: perl
+name: List-Pairwise
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  Exporter: 0
+version: 0.19
