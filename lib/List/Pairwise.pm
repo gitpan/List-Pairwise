@@ -1,7 +1,7 @@
 package List::Pairwise;
 use strict;
 use warnings;
-our $VERSION = '0.19';
+our $VERSION = '0.20';
 use Exporter;
 
 our %EXPORT_TAGS = ( 
@@ -28,7 +28,7 @@ sub mapp (&@) {
 	
 	if (@_&1) {
 		require Carp;
-		Carp::croak "Odd number of elements in list"
+		Carp::croak("Odd number of elements in list")
 	}
 
 	# Localise $a and $b
@@ -64,7 +64,7 @@ sub grepp (&@) {
 	
 	if (@_&1) {
 		require Carp;
-		Carp::croak "Odd number of elements in list"
+		Carp::croak("Odd number of elements in list")
 	}
 
 	# Localise $a and $b
@@ -105,7 +105,7 @@ sub firstp (&@) {
 	
 	if (@_&1) {
 		require Carp;
-		Carp::croak "Odd number of elements in list"
+		Carp::croak("Odd number of elements in list")
 	}
 
 	# Localise $a and $b
@@ -136,7 +136,7 @@ sub lastp (&@) {
 	
 	if (@_&1) {
 		require Carp;
-		Carp::croak "Odd number of elements in list"
+		Carp::croak("Odd number of elements in list")
 	}
 
 	# Localise $a and $b

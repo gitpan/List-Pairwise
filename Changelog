@@ -1,0 +1,8 @@
+0.20  2006-10-22
+    - Fixed Carp::croak calls to run on Perl 5.9.x
+    - Added clarifications in POD regarding in-place
+      operations, as suggested by Andreas J. Koenig
+    - Some other minor POD modifications
+
+0.19  2006-10-18
+    - First release on CPAN

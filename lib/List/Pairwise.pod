@@ -4,7 +4,7 @@ List::Pairwise - map/grep arrays and hashes pairwise
 
 =head1 SYNOPSIS
 
-    use List::Pairwise qw(mapp grepp);
+    use List::Pairwise qw(:all);
     
     my %a = (
         snoogy1  => 4,
@@ -29,7 +29,7 @@ List::Pairwise - map/grep arrays and hashes pairwise
     mapp {$b++} %a;
     
     # modify keys (does not work in-place)
-    %a = mapp {lc($a) => $b} %a;
+    my %b = mapp {lc($a) => $b} %a;
     
     # grep hash subset
     my %subset1 = grepp {$a =~ /snoogy/} %a;
@@ -78,7 +78,9 @@ modify values in-place :
 
 modifying hash keys in-place does not work with a hash :
 
-    mapp {$a = lc($a)} %a; # wrong
+    mapp {$a = lc($a)} %a;          # wrong
+    my %b = mapp {lc($a) => $b} %a; # ok
+    %a = mapp {lc($a) => $b} %a;    # also ok (copy)
 
 modify array "keys" in-place :
 
@@ -109,7 +111,7 @@ to true. grepp will croak if LIST has an odd number of elements.
 In scalar context, returns the number of valid pairs, ie the
 number of times the expression was true.
 
-So we have this equalisty:
+So we have this equality:
 
     (grepp BLOCK LIST) == 1/2 * scalar(my @a = (grepp BLOCK LIST))
 
@@ -142,6 +144,19 @@ setting $a and $b to each pair) and returns the last pair for
 which the expression evaluated to true. lastp will croak if LIST
 has an odd number of elements. 
 In scalar context, returns 1 if a valid pair was found.
+
+=back
+
+=head1 EXPORTS
+
+Nothing by default.
+Functions can be imported explicitely
+
+    use List::MoreUtils qw(mapp grepp first_pairwise);
+
+You can use the :all tag to import all functions, including *_pairwise aliases
+
+    use List::Pairwise qw(:all);
 
 =back
 
