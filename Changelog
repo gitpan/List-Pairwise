@@ -1,3 +1,7 @@
+0.21  2006-10-23
+    - Updated Module::Install (0.64)
+    - corrected typo in POD
+
 0.20  2006-10-22
     - Fixed Carp::croak calls to run on Perl 5.9.x
     - Added clarifications in POD regarding in-place

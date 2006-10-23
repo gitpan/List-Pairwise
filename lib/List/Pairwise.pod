@@ -111,7 +111,7 @@ to true. grepp will croak if LIST has an odd number of elements.
 In scalar context, returns the number of valid pairs, ie the
 number of times the expression was true.
 
-So we have this equality:
+So this equality stands:
 
     (grepp BLOCK LIST) == 1/2 * scalar(my @a = (grepp BLOCK LIST))
 
@@ -152,7 +152,7 @@ In scalar context, returns 1 if a valid pair was found.
 Nothing by default.
 Functions can be imported explicitely
 
-    use List::MoreUtils qw(mapp grepp first_pairwise);
+    use List::Pairwise qw(mapp grepp first_pairwise);
 
 You can use the :all tag to import all functions, including *_pairwise aliases
 
