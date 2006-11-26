@@ -160,6 +160,21 @@ You can use the :all tag to import all functions, including *_pairwise aliases
 
 =back
 
+=head1 TEST COVERAGE
+
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+    File                           stmt   bran   cond    sub    pod   time  total
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+    coverage.pl                   100.0    n/a    n/a  100.0    n/a  100.0  100.0
+    lib/List/Pairwise.pm          100.0  100.0  100.0  100.0  100.0    0.0  100.0
+    t/firstp.t                    100.0    n/a    n/a  100.0    n/a    0.0  100.0
+    t/grepp.t                     100.0    n/a    n/a  100.0    n/a    0.0  100.0
+    t/lastp.t                     100.0    n/a    n/a  100.0    n/a    0.0  100.0
+    t/load.t                      100.0    n/a    n/a  100.0    n/a    0.0  100.0
+    t/mapp.t                      100.0    n/a    n/a  100.0    n/a    0.0  100.0
+    Total                         100.0  100.0  100.0  100.0  100.0  100.0  100.0
+    ---------------------------- ------ ------ ------ ------ ------ ------ ------
+
 =head1 TODO
 
 =over 4

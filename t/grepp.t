@@ -1,8 +1,8 @@
 use strict;
-use warnings;
+#use warnings;
 use Test::More;
 
-plan tests => 8;
+plan tests => 10;
 
 use List::Pairwise 'grepp';
 
@@ -50,3 +50,22 @@ is_deeply(
 		snoogy2  => 2, 
 	}
 );
+
+# inplace
+my %b;
+%b = %a;
+grepp {$b++} %b; # void context (same a mapp)
+is_deeply(
+	{
+		%b
+	}, {
+		snoogy1  => 5,
+		snoogy2  => 3, 
+		NOT      => 5,
+		snoogy3  => 6,
+		hehe     => 13,
+	}
+);
+
+eval {grepp {$a, $b} (1..5)};
+like($@, '/^Odd number of elements in list /');

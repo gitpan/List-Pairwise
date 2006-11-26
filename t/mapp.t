@@ -1,8 +1,8 @@
 use strict;
-use warnings;
+#use warnings;
 use Test::More;
 
-plan tests => 8;
+plan tests => 9;
 
 use List::Pairwise 'mapp';
 
@@ -55,7 +55,7 @@ is_deeply(
 # inplace
 my %b;
 %b = %a;
-mapp {$b++} %b;
+mapp {$b++} %b; # void context
 is_deeply(
 	{
 		%b
@@ -77,3 +77,6 @@ is_deeply(
 		%a
 	}
 );
+
+eval {mapp {$a, $b} (1..5)};
+like($@, '/^Odd number of elements in list /');

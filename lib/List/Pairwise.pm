@@ -1,22 +1,24 @@
 package List::Pairwise;
 use strict;
-use warnings;
-our $VERSION = '0.21';
+#use warnings;
+use vars qw($VERSION %EXPORT_TAGS @EXPORT_OK);
 use Exporter;
 
-our %EXPORT_TAGS = ( 
+$VERSION= '0.22';
+
+%EXPORT_TAGS = ( 
 	all => [ qw(
 		mapp grepp firstp lastp
 		map_pairwise grep_pairwise first_pairwise last_pairwise
 	) ],
 );
 
-our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
+@EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
 
 sub import {
 	my $pkg = caller();
 	no strict 'refs';
-	no warnings;
+	#no warnings;
 	# avoid "Name "main::a" used only once" warnings for $a and $b
 	(*{$pkg.'::a'}, *{$pkg.'::b'});
 	
@@ -40,7 +42,7 @@ sub mapp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	no warnings;
+	#no warnings;
 	if (wantarray) {
 		# list context
 		map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->()} (1..@_/2)
@@ -76,7 +78,7 @@ sub grepp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	no warnings;
+	#no warnings;
 
 	if (wantarray) {
 		# list context
@@ -117,7 +119,7 @@ sub firstp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	no warnings;
+	#no warnings;
 	
 	if (wantarray) {
 		# list context
@@ -148,7 +150,7 @@ sub lastp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	no warnings;
+	#no warnings;
 	
 	if (wantarray) {
 		# list context

@@ -1,8 +1,8 @@
 use strict;
-use warnings;
+#use warnings;
 use Test::More;
 
-plan tests => 9;
+plan tests => 10;
 
 use List::Pairwise 'firstp';
 
@@ -53,3 +53,6 @@ is_deeply(
 	}, {
 	}
 );
+
+eval {firstp {$a, $b} (1..5)};
+like($@, '/^Odd number of elements in list /');

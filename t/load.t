@@ -1,5 +1,5 @@
 use strict;
-use warnings;
+#use warnings;
 use Test::More;
 
 plan tests => 13;

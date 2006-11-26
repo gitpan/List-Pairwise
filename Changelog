@@ -1,6 +1,12 @@
+0.22  2006-11-26
+    - Improved test coverage (now 100%)
+    - Added test coverage report to POD
+    - Added 'vars' and removed 'warnings' pragmas to
+      ensure compatibility with old perl versions
+
 0.21  2006-10-23
     - Updated Module::Install (0.64)
-    - corrected typo in POD
+    - Corrected typo in POD
 
 0.20  2006-10-22
     - Fixed Carp::croak calls to run on Perl 5.9.x
