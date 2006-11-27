@@ -4,7 +4,7 @@ use strict;
 use vars qw($VERSION %EXPORT_TAGS @EXPORT_OK);
 use Exporter;
 
-$VERSION= '0.22';
+$VERSION= '0.23';
 
 %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -18,9 +18,10 @@ $VERSION= '0.22';
 sub import {
 	my $pkg = caller();
 	no strict 'refs';
-	#no warnings;
+
 	# avoid "Name "main::a" used only once" warnings for $a and $b
-	(*{$pkg.'::a'}, *{$pkg.'::b'});
+	() = (*{$pkg.'::a'}, *{$pkg.'::b'});
+	# "()=" to avoid "useless use of variable in void context" warning
 	
 	goto &Exporter::import
 }
@@ -43,6 +44,8 @@ sub mapp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	#no warnings;
+	local $^W = 0;
+	
 	if (wantarray) {
 		# list context
 		map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->()} (1..@_/2)
@@ -79,6 +82,7 @@ sub grepp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	#no warnings;
+	local $^W = 0;
 
 	if (wantarray) {
 		# list context
@@ -120,6 +124,7 @@ sub firstp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	#no warnings;
+	local $^W = 0;
 	
 	if (wantarray) {
 		# list context
@@ -151,6 +156,7 @@ sub lastp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	#no warnings;
+	local $^W = 0;
 	
 	if (wantarray) {
 		# list context

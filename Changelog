@@ -1,3 +1,9 @@
+0.23  2006-11_27
+    - In my hurry to remove uses of the 'warnings'
+      pragma I forgot to set $^W to 0 where it had
+      to. This is now fixed and it should work again
+      under perl -w without issuing warnings.
+
 0.22  2006-11-26
     - Improved test coverage (now 100%)
     - Added test coverage report to POD

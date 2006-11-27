@@ -1,10 +1,9 @@
 use strict;
-use warnings;
-use lib 'lib';
 use Devel::Cover;
 use Test::More qw(no_plan);
 {
-	no warnings 'redefine';
+	#no warnings 'redefine';
+	local $^W = 0;
 	*Test::More::plan = sub {};
 }
 for my $file (glob 't/*.t') {
