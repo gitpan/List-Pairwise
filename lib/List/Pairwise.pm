@@ -4,12 +4,13 @@ use strict;
 use vars qw($VERSION %EXPORT_TAGS @EXPORT_OK);
 use Exporter;
 
-$VERSION= '0.23';
+$VERSION= '0.24';
 
 %EXPORT_TAGS = ( 
 	all => [ qw(
 		mapp grepp firstp lastp
 		map_pairwise grep_pairwise first_pairwise last_pairwise
+		pair
 	) ],
 );
 
@@ -26,13 +27,14 @@ sub import {
 	goto &Exporter::import
 }
 
+sub _croak_odd {
+	require Carp;
+	Carp::croak('Odd number of elements in list to &', [caller(1)]->[3])
+}
+
 sub mapp (&@) {
 	my $code = shift;
-	
-	if (@_&1) {
-		require Carp;
-		Carp::croak("Odd number of elements in list")
-	}
+	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -66,11 +68,7 @@ sub mapp (&@) {
 
 sub grepp (&@) {
 	my $code = shift;
-	
-	if (@_&1) {
-		require Carp;
-		Carp::croak("Odd number of elements in list")
-	}
+	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -108,11 +106,7 @@ sub grepp (&@) {
 
 sub firstp (&@) {
 	my $code = shift;
-	
-	if (@_&1) {
-		require Carp;
-		Carp::croak("Odd number of elements in list")
-	}
+	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -140,11 +134,7 @@ sub firstp (&@) {
 
 sub lastp (&@) {
 	my $code = shift;
-	
-	if (@_&1) {
-		require Carp;
-		Carp::croak("Odd number of elements in list")
-	}
+	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -168,6 +158,14 @@ sub lastp (&@) {
 		$code->() && return 1 while (*$caller_a, *$caller_b) = @_ ? \splice(@_, -2) : ();
 		undef
 	}
+}
+
+sub pair (@) {
+	_croak_odd if @_&1;
+	return @_
+		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_ / 2)
+		: wantarray ? () : 0
+	;
 }
 
 #sub truep   (&@) { scalar &grepp(@_)      }

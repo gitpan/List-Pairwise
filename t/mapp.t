@@ -2,7 +2,7 @@ use strict;
 #use warnings;
 use Test::More;
 
-plan tests => 9;
+plan tests => 10 unless $::NO_PLAN;
 
 use List::Pairwise 'mapp';
 
@@ -15,8 +15,9 @@ my %a = (
 );
 
 # count
-is(scalar(mapp {$a} %a), scalar(keys %a));
-is(scalar(mapp {$a => $b} %a), 2*scalar(keys %a));
+is(scalar(mapp {$a} %a), scalar(keys %a), 'scalar context count 1');
+is(scalar(mapp {$a => $b} %a), 2*scalar(keys %a), 'scalar context count 2');
+is(scalar(mapp {$a, $b, 4} %a), 3*scalar(keys %a), 'scalar context count 3');
 
 # copy
 is_deeply(
@@ -24,21 +25,24 @@ is_deeply(
 		mapp {$a => $b} %a
 	}, {
 		%a
-	}
+	},
+	'copy',
 );
 is_deeply(
 	[
 		mapp {$a} %a
 	], [
 		keys %a
-	]
+	],
+	'keys',
 );
 is_deeply(
 	[
 		mapp {$b} %a
 	], [
 		values %a
-	]
+	],
+	'values',
 );
 is_deeply(
 	{
@@ -49,7 +53,8 @@ is_deeply(
 		not      => 4,
 		snoogy3  => 5,
 		hehe     => 12,
-	}
+	},
+	'copy with lc keys',
 );
 
 # inplace
@@ -65,7 +70,8 @@ is_deeply(
 		NOT      => 5,
 		snoogy3  => 6,
 		hehe     => 13,
-	}
+	},
+	'inc values inplace',
 );
 
 %b = %a;
@@ -75,8 +81,9 @@ is_deeply(
 		%b
 	}, {
 		%a
-	}
+	},
+	'lc keys inplace shall not work',
 );
 
 eval {mapp {$a, $b} (1..5)};
-like($@, '/^Odd number of elements in list /');
+like($@, '/^Odd number of elements in list to &List::Pairwise::mapp at /', 'odd list');

@@ -1,4 +1,16 @@
-0.23  2006-11_27
+0.24  2007-11-29
+    - added a pair() function, as per Johan Lodin's
+      suggestion, implementation and examples
+    - added tests and POD for pair()
+    - show sub name when croaking, making it easier
+      to debug multiple chained mapp/grepp, as per
+      Johan Lodin's request
+    - renamed load.t to 01load.t
+    - added tests description
+    - clarified synopsis (I hope)
+    - Updated to Module::Install 0.68
+
+0.23  2006-11-27
     - In my hurry to remove uses of the 'warnings'
       pragma I forgot to set $^W to 0 where it had
       to. This is now fixed and it should work again
