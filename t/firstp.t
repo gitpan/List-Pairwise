@@ -1,8 +1,8 @@
 use strict;
-#use warnings;
+use warnings;
 use Test::More;
 
-plan tests => 10 unless $::NO_PLAN;
+plan tests => 19 unless $::NO_PLAN && $::NO_PLAN;
 
 use List::Pairwise 'firstp';
 
@@ -58,5 +58,49 @@ is_deeply(
 	'extract 4',
 );
 
-eval {firstp {$a, $b} (1..5)};
-like($@, '/^Odd number of elements in list to &List::Pairwise::firstp at /', 'odd list');
+# odd list
+{
+	my $file = quotemeta __FILE__;
+
+	{
+		no warnings;
+		my $ok = 1;
+		local $SIG{__WARN__} = sub{$ok=0};
+		eval {firstp {$a, $b} (1..5)};
+		is($@, '', 'odd list, no warning');
+		ok($ok, 'no warning occured');
+	}
+	
+	{
+		use warnings;
+		my $ok = 0;
+		my $warn;
+		local $SIG{__WARN__} = sub{$ok=1; $warn=shift};
+		eval {firstp {$a, $b} (1..5)};
+		my $line = __LINE__ - 1;
+		is($@, '', 'odd list');
+		ok($ok, 'warning occured');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::firstp arguments at $file line $line$/, 'odd list carp');
+	}
+
+	{
+		no warnings 'misc';
+		my $ok = 1;
+		local $SIG{__WARN__} = sub{$ok=0};
+		eval {firstp {$a, $b} (1..5)};
+		is($@, '', 'odd list, no warning');
+		ok($ok, 'no warning occured');
+	}
+	
+	{
+		use warnings 'misc';
+		my $ok = 0;
+		my $warn;
+		local $SIG{__WARN__} = sub{$ok=1; $warn=shift};
+		eval {firstp {$a, $b} (1..5)};
+		my $line = __LINE__ - 1;
+		is($@, '', 'odd list');
+		ok($ok, 'warning occured');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::firstp arguments at $file line $line$/, 'odd list carp');
+	}
+}

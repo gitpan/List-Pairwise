@@ -1,3 +1,15 @@
+0.25  2007-12-03
+    - removed croak when given a on odd list of
+      arguments, warn if warnings are enabled, as
+      suggested by Johan Lodin
+    - added tests and pod for this new behavior      
+    - added require for perl 5.006 in Makefile.PL:
+      inplace modification tests were failing on
+      perl 5.005 (Slaven Rezic)
+    - moved coverage.pl in the t/ directory, so that
+      it does not get install along Pairwise.pm
+    - removed warnings in tests for $::NO_PLAN
+
 0.24  2007-11-29
     - added a pair() function, as per Johan Lodin's
       suggestion, implementation and examples

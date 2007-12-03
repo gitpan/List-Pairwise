@@ -1,8 +1,8 @@
 use strict;
-#use warnings;
+use warnings;
 use Test::More;
 
-plan tests => 14 unless $::NO_PLAN;
+plan tests => 14 unless  $::NO_PLAN && $::NO_PLAN;
 
 require_ok 'List::Pairwise';
 List::Pairwise->import(':all');

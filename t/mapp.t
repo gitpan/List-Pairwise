@@ -1,8 +1,8 @@
 use strict;
-#use warnings;
+use warnings;
 use Test::More;
 
-plan tests => 10 unless $::NO_PLAN;
+plan tests => 29 unless $::NO_PLAN && $::NO_PLAN;
 
 use List::Pairwise 'mapp';
 
@@ -85,5 +85,96 @@ is_deeply(
 	'lc keys inplace shall not work',
 );
 
-eval {mapp {$a, $b} (1..5)};
-like($@, '/^Odd number of elements in list to &List::Pairwise::mapp at /', 'odd list');
+{
+	no warnings;
+	is((mapp {[$a, $b]} ()), 0, 'scalar mapp empty list');
+	is((mapp {[$a, $b]} (1)), 1, 'scalar mapp 1 element');
+	is((mapp {[$a, $b]} (1..2)), 1, 'scalar mapp 2 element2');
+	is((mapp {[$a, $b]} (1..3)), 2, 'scalar mapp 3 element2');
+	is_deeply(
+		[mapp {[$a, $b]} (1)],
+		[[1, undef]],
+		'list mapp 1 elements',
+	);
+	is_deeply(
+		[mapp {[$a, $b]} (1..2)],
+		[[1, 2]],
+		'list mapp 2 elements',
+	);
+	is_deeply(
+		[mapp {[$a, $b]} (1..3)],
+		[[1, 2], [3, undef]],
+		'list mapp 3 elements',
+	);
+}
+
+{
+	no warnings;
+
+	is_deeply(
+		[mapp {$a, $b} (1..3)],
+		[1..3, undef],
+		'mapp odd list',
+	);
+
+	my @list = (1..3);
+	
+	is_deeply(
+		[mapp {++$a, ++$b} @list],
+		[2..4, 1],
+		'inc mapp odd list',
+	);
+	
+	is_deeply(
+		\@list,
+		[2..4],
+	);
+}
+
+# odd list
+{
+	my $file = quotemeta __FILE__;
+	
+	{
+		no warnings;
+		my $ok = 1;
+		local $SIG{__WARN__} = sub{$ok=0};
+		eval {mapp {$a, $b} (1..5)};
+		is($@, '', 'odd list, no warning');
+		ok($ok, 'no warning occured');
+	}
+	
+	{
+		use warnings;
+		my $ok = 0;
+		my $warn;
+		local $SIG{__WARN__} = sub{$ok=1; $warn=shift};
+		eval {mapp {$a, $b} (1..5)};
+		my $line = __LINE__ - 1;
+		is($@, '', 'odd list');
+		ok($ok, 'warning occured');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::mapp arguments at $file line $line$/, 'odd list carp');
+	}
+
+	{
+		no warnings 'misc';
+		my $ok = 1;
+		local $SIG{__WARN__} = sub{$ok=0};
+		eval {mapp {$a, $b} (1..5)};
+		is($@, '', 'odd list, no warning');
+		ok($ok, 'no warning occured');
+	}
+	
+	{
+		use warnings 'misc';
+		my $ok = 0;
+		my $warn;
+		local $SIG{__WARN__} = sub{$ok=1; $warn=shift};
+		eval {mapp {$a, $b} (1..5)};
+		my $line = __LINE__ - 1;
+		is($@, '', 'odd list');
+		ok($ok, 'warning occured');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::mapp arguments at $file line $line$/, 'odd list carp');
+	}
+	
+}

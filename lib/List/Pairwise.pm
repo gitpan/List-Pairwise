@@ -1,12 +1,12 @@
 package List::Pairwise;
+use 5.006;
 use strict;
-#use warnings;
-use vars qw($VERSION %EXPORT_TAGS @EXPORT_OK);
+use warnings;
 use Exporter;
 
-$VERSION= '0.24';
+our $VERSION= '0.25';
 
-%EXPORT_TAGS = ( 
+our %EXPORT_TAGS = ( 
 	all => [ qw(
 		mapp grepp firstp lastp
 		map_pairwise grep_pairwise first_pairwise last_pairwise
@@ -14,7 +14,7 @@ $VERSION= '0.24';
 	) ],
 );
 
-@EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
+our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
 
 sub import {
 	my $pkg = caller();
@@ -27,14 +27,20 @@ sub import {
 	goto &Exporter::import
 }
 
-sub _croak_odd {
-	require Carp;
-	Carp::croak('Odd number of elements in list to &', [caller(1)]->[3])
+sub _carp_odd {
+	if (warnings::enabled('misc')) {
+		require Carp;
+		Carp::carp('Odd number of elements in &', [caller(1)]->[3], ' arguments');
+	}
 }
 
 sub mapp (&@) {
+	unless (@_&1) {
+		_carp_odd;
+		push @_, undef;
+		goto \&mapp;
+	}
 	my $code = shift;
-	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -45,8 +51,7 @@ sub mapp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	#no warnings;
-	local $^W = 0;
+	no warnings;
 	
 	if (wantarray) {
 		# list context
@@ -67,8 +72,12 @@ sub mapp (&@) {
 }
 
 sub grepp (&@) {
+	unless (@_&1) {
+		_carp_odd;
+		push @_, undef;
+		goto \&grepp;
+	}
 	my $code = shift;
-	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -79,8 +88,7 @@ sub grepp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	#no warnings;
-	local $^W = 0;
+	no warnings;
 
 	if (wantarray) {
 		# list context
@@ -105,8 +113,12 @@ sub grepp (&@) {
 }
 
 sub firstp (&@) {
+	unless (@_&1) {
+		_carp_odd;
+		push @_, undef;
+		goto \&firstp;
+	}
 	my $code = shift;
-	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -117,8 +129,7 @@ sub firstp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	#no warnings;
-	local $^W = 0;
+	no warnings;
 	
 	if (wantarray) {
 		# list context
@@ -133,8 +144,12 @@ sub firstp (&@) {
 }
 
 sub lastp (&@) {
+	unless (@_&1) {
+		_carp_odd;
+		push @_, undef;
+		goto \&lastp;
+	}
 	my $code = shift;
-	_croak_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -145,8 +160,7 @@ sub lastp (&@) {
 	};
 	local(*$caller_a, *$caller_b);
 
-	#no warnings;
-	local $^W = 0;
+	no warnings;
 	
 	if (wantarray) {
 		# list context
@@ -160,10 +174,10 @@ sub lastp (&@) {
 	}
 }
 
-sub pair (@) {
-	_croak_odd if @_&1;
+sub pair {
+	_carp_odd if @_&1;
 	return @_
-		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_ / 2)
+		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_>>1)
 		: wantarray ? () : 0
 	;
 }
