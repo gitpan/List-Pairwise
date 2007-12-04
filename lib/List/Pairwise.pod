@@ -206,13 +206,15 @@ In prior versions, List::Pairwise function did croak when given a list with an o
 number of elements. This is not the case anymore: a warning will now be emitted if
 warnings of the 'misc' category are enabled, and the last pair will be completed
 with an undefined value.
-The old behavior can be restored by either making these misc warnings FATAL:
+The old behavior can be restored by making these misc warnings FATAL:
 
     use warnings FATAL => 'misc';
 
 =back
 
 =head1 TEST COVERAGE
+
+As of List::Pairwise version 0.25:
 
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
     File                           stmt   bran   cond    sub    pod   time  total
@@ -244,13 +246,20 @@ L<List::MoreUtils>, L<List::Util>, C<grep>, C<map>
 =head1 ACKNOWLEDGMENT
 
 The author wishes to thank:
-    - Johan Lodin for the pair() idea and implementation, as well as the idea of
-      warning instead of dying when given an odd number of arguments, to mimic
-      perl behavior
-    - Andreas J. Koenig for its advices on documentation and its insight on how to
-      keep perl 5.10 compatibility
-    - Slaven Rezic for discovering the issues that module has with pre-5.6 versions
-      of perl
+
+=over 4
+
+=item * Johan Lodin for the pair() idea and implementation, as well as the idea of
+warning instead of dying when given an odd number of arguments, to mimic
+perl behavior
+
+=item * Andreas J. Koenig for its advices on documentation and its insight on how to
+keep perl 5.10 compatibility
+
+=item * Slaven Rezic for discovering the issues that module has with pre-5.6 versions
+of perl
+
+=back
 
 =head1 AUTHOR
 

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION= '0.25';
+our $VERSION= '0.26';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -17,21 +17,16 @@ our %EXPORT_TAGS = (
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
 
 sub import {
-	my $pkg = caller();
-	no strict 'refs';
-
+	no strict qw(refs);
+	no warnings qw(once void);
 	# avoid "Name "main::a" used only once" warnings for $a and $b
-	() = (*{$pkg.'::a'}, *{$pkg.'::b'});
-	# "()=" to avoid "useless use of variable in void context" warning
-	
+	*{caller().'::a'};
+	*{caller().'::b'};
 	goto &Exporter::import
 }
 
 sub _carp_odd {
-	if (warnings::enabled('misc')) {
-		require Carp;
-		Carp::carp('Odd number of elements in &', [caller(1)]->[3], ' arguments');
-	}
+	warnings::warnif(misc => 'Odd number of elements in &'. [caller(1)]->[3]. ' arguments')
 }
 
 sub mapp (&@) {

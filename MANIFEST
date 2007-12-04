@@ -22,3 +22,7 @@ t/grepp.t
 t/lastp.t
 t/mapp.t
 t/pair.t
+t/warn1.t
+t/warn2.t
+t/warn3.t
+t/warn4.t
