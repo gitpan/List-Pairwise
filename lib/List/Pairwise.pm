@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION= '0.26';
+our $VERSION= '0.27';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(

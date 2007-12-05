@@ -1,3 +1,8 @@
+0.27  2007-12-05
+    - Relaxed warnings detection in tests. Should now
+      pass again for perl 5.6.x
+    - ignore warnX.t tests in coverage.pl
+
 0.26  2007-12-04
     - removed warnings for $a and $b when they where
       not used in the module (Johan Lodin).
@@ -6,7 +11,7 @@
     - added tests for these warnings
     - warnings could be set FATAL in the last release
       because that was carp that was used (Johan Lodin)
-    - some minor POD fixes      
+    - some minor POD fixes
 
 0.25  2007-12-03
     - removed croak when given a on odd list of

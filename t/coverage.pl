@@ -15,5 +15,6 @@ use lib "lib";
 $::NO_PLAN = 1;
 
 for my $file (glob 't/*.t') {
+	next if $file =~ /warn\d+\.t$/;
 	require $file;
 }
