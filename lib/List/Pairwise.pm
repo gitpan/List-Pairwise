@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION= '0.27';
+our $VERSION= '0.28';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -62,7 +62,7 @@ sub mapp (&@) {
 	}
 	else {
 		# void context
-		$code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		() = $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
 	}
 }
 
@@ -102,8 +102,8 @@ sub grepp (&@) {
 	}
 	else {
 		# void context
-		# same as mapp
-		$code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		# same as mapp, but evaluates $code in scalar context
+		scalar $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
 	}
 }
 

@@ -1,3 +1,13 @@
+0.28  2007-12-06
+    - Made sure mapp and grepp/firstp/lastp code blocks
+      are executed in the same context as with map and
+      grep (Johan Lodin)
+    - Added a new context.t test to test this behavior
+      (Johan Lodin)
+    - clarify this in POD
+    - added an example in POD on how firstp can be used
+      to iterate pairs and emulating a last statement
+
 0.27  2007-12-05
     - Relaxed warnings detection in tests. Should now
       pass again for perl 5.6.x
