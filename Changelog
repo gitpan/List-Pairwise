@@ -1,3 +1,9 @@
+0.29  2008-08-12
+    - no functional change, no need to update
+    - updated to Module::Install 0.77 and remove
+      auto_install() call in Makefile.PL
+    - minor POD corrections
+
 0.28  2007-12-06
     - Made sure mapp and grepp/firstp/lastp code blocks
       are executed in the same context as with map and

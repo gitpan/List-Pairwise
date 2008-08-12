@@ -260,7 +260,7 @@ The author wishes to thank:
 =item * Johan Lodin for the C<pair> idea and implementation, as well as numerous other
 contributions (see changelog)
 
-=item * Andreas J. Koenig for its advices on documentation and its insight on how to
+=item * Andreas J. Koenig for his advices on documentation and his insight on how to
 keep perl 5.10 compatibility
 
 =item * Slaven Rezic for discovering the issues that module has with pre-5.6 versions
