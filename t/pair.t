@@ -96,7 +96,7 @@ is($@, '', 'empty list, void context');
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::pair arguments at $file line $line(?:$|\s)/, 'odd list carp');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::pair arguments at $file line $line\b/, 'odd list carp');
 	}
 
 	{
@@ -117,6 +117,6 @@ is($@, '', 'empty list, void context');
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::pair arguments at $file line $line(?:$|\s)/, 'odd list carp');
+		like($warn, qr/^Odd number of elements in &List::Pairwise::pair arguments at $file line $line\b/, 'odd list carp');
 	}
 }
