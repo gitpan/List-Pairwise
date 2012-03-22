@@ -1,3 +1,8 @@
+1.00  2012-03-22
+    - no functional change, no need to update
+    - bumping version number to 1.00
+    - updated to Module::Install 1.06
+
 0.30  2012-02-14
     - no functional change, no need to update
     - modified tests to pass under perl 5.15
