@@ -41,6 +41,15 @@ List::Pairwise - map/grep arrays and hashes pairwise
 C<List::Pairwise> provides functions to map and grep lists two elements at a time,
 setting $a and $b to each pair instead of setting $_ to each element.
 
+As of version 1.01, List::Pairwise now tries to use the newly implemented XS
+functions pairmap, pairgrep, pairfirst and pairs from List::Util 1.31 and up,
+resulting in a major speedup.
+
+New code should now preferably use List::Util functions directly, with the added
+benefit of relying on a Perl core module.
+
+=back
+
 =over 4
 
 =item mapp BLOCK LIST
@@ -239,17 +248,9 @@ As of List::Pairwise version 0.28:
     Total                         100.0  100.0  100.0  100.0  100.0  100.0  100.0
     ---------------------------- ------ ------ ------ ------ ------ ------ ------
 
-=head1 TODO
-
-=over 4
-
-=item * XS implementation
-
-=back
-
 =head1 SEE ALSO
 
-L<List::MoreUtils>, L<List::Util>, C<grep>, C<map>
+L<List::Util>, L<List::MoreUtils>, C<grep>, C<map>
 
 =head1 ACKNOWLEDGMENT
 
@@ -265,6 +266,9 @@ keep perl 5.10 compatibility
 
 =item * Slaven Rezic for discovering the issues that module has with pre-5.6 versions
 of perl
+
+=item * Paul "LeoNerd" Evans for having implemented XS versions of these functions in
+the core module L<List::Util>
 
 =back
 

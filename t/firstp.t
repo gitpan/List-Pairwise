@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 19 unless $::NO_PLAN && $::NO_PLAN;
+plan tests => 27 unless $::NO_PLAN && $::NO_PLAN;
 
 use List::Pairwise 'firstp';
 
@@ -19,6 +19,10 @@ my %a = @b;
 is(scalar(firstp {$a =~ /snoogy/} %a), 1, 'scalar context true 1');
 is(scalar(firstp {$b < 5} %a), 1, 'scalar context true 2');
 is(scalar(firstp {$a =~ /snoogy/ && $b < 5} %a), 1, 'scalar context true 3');
+{
+	no warnings;
+	is(scalar(firstp {$b > 5} (1..9)), 1, 'scalar context true odd');
+}
 is(scalar(firstp {$a =~ /bla/} %a), undef, 'scalar context false');
 
 # count vs list
@@ -58,6 +62,58 @@ is_deeply(
 	'extract 4',
 );
 
+
+{
+	no warnings;
+
+	is_deeply(
+		[firstp {$a==3} (1..3)],
+		[3, undef],
+		'firstp odd list',
+	);
+
+	{ # inc odd in list context
+		my @list = (1..3);
+
+		my $res = eval { [ firstp {++$a; ++$b; $a==4} @list ] };
+		like($@, qr/Modification of a read-only value attempted/, 'list context inc firstp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'list context inc firstp odd list 2/2'
+		);
+	}
+
+	{ # inc odd in scalar context
+		my @list = (1..3);
+
+		my $res = eval { firstp {++$a; ++$b; $a==4} @list };
+		like($@, qr/Modification of a read-only value attempted/, 'scalar context inc firstp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'scalar context inc firstp odd list 2/2'
+		);
+	}
+
+	{ # inc odd in void context
+		my @list = (1..3);
+
+		eval { firstp {++$a; ++$b; $a==4} @list };
+		like($@, qr/Modification of a read-only value attempted/, 'void context inc firstp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'void context inc firstp odd list 2/2'
+		);
+	}
+}
+
+
+
 # odd list
 {
 	my $file = quotemeta __FILE__;
@@ -80,7 +136,7 @@ is_deeply(
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::firstp arguments at $file line $line\b/, 'odd list carp');
+		like($warn, qr/^Odd number of elements\b/, 'odd list carp');
 	}
 
 	{
@@ -101,6 +157,6 @@ is_deeply(
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::firstp arguments at $file line $line\b/, 'odd list carp');
+		like($warn, qr/^Odd number of elements\b/, 'odd list carp');
 	}
 }

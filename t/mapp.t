@@ -2,22 +2,40 @@ use strict;
 use warnings;
 use Test::More;
 
-plan tests => 29 unless $::NO_PLAN && $::NO_PLAN;
+plan tests => 36 unless $::NO_PLAN && $::NO_PLAN;
 
 use List::Pairwise 'mapp';
-
 my %a = (
-	snoogy1  => 4,
-	snoogy2  => 2, 
-	NOT      => 4,
-	snoogy3  => 5,
+	snoogy1  => 40,
+	snoogy2  => 20, 
+	NOT      => 40,
+	snoogy3  => 50,
 	hehe     => 12,
 );
+
+# use Time::HiRes qw(time);
+# my $t = time;
+# my @a = (1..1000);
+# no warnings;
+# for (1..1000) {
+# 	(mapp {$a} @a)
+# }
+# die time -$t;
+# exit;
 
 # count
 is(scalar(mapp {$a} %a), scalar(keys %a), 'scalar context count 1');
 is(scalar(mapp {$a => $b} %a), 2*scalar(keys %a), 'scalar context count 2');
 is(scalar(mapp {$a, $b, 4} %a), 3*scalar(keys %a), 'scalar context count 3');
+
+{
+	no warnings;
+	is(scalar(mapp {$a, $b, 4} (1..9)), 3*5, 'scalar context count odd');
+}
+
+my $count=0;
+is(scalar(mapp {$count+=$b} %a), scalar(keys %a), 'scalar context increment 1/2');
+is($count, 40+20+40+50+12, 'scalar context increment 2/2');
 
 # copy
 is_deeply(
@@ -48,10 +66,10 @@ is_deeply(
 	{
 		mapp {lc($a) => $b} %a
 	}, {
-		snoogy1  => 4,
-		snoogy2  => 2, 
-		not      => 4,
-		snoogy3  => 5,
+		snoogy1  => 40,
+		snoogy2  => 20, 
+		not      => 40,
+		snoogy3  => 50,
 		hehe     => 12,
 	},
 	'copy with lc keys',
@@ -65,10 +83,10 @@ is_deeply(
 	{
 		%b
 	}, {
-		snoogy1  => 5,
-		snoogy2  => 3, 
-		NOT      => 5,
-		snoogy3  => 6,
+		snoogy1  => 41,
+		snoogy2  => 21, 
+		NOT      => 41,
+		snoogy3  => 51,
 		hehe     => 13,
 	},
 	'inc values inplace',
@@ -87,10 +105,10 @@ is_deeply(
 
 {
 	no warnings;
-	is((mapp {[$a, $b]} ()), 0, 'scalar mapp empty list');
-	is((mapp {[$a, $b]} (1)), 1, 'scalar mapp 1 element');
-	is((mapp {[$a, $b]} (1..2)), 1, 'scalar mapp 2 element2');
-	is((mapp {[$a, $b]} (1..3)), 2, 'scalar mapp 3 element2');
+	is((scalar mapp {[$a, $b]} ()), 0, 'scalar mapp empty list');
+	is((scalar mapp {[$a, $b]} (1)), 1, 'scalar mapp 1 element');
+	is((scalar mapp {[$a, $b]} (1..2)), 1, 'scalar mapp 2 element2');
+	is((scalar mapp {[$a, $b]} (1..3)), 2, 'scalar mapp 3 element2');
 	is_deeply(
 		[mapp {[$a, $b]} (1)],
 		[[1, undef]],
@@ -117,18 +135,44 @@ is_deeply(
 		'mapp odd list',
 	);
 
-	my @list = (1..3);
-	
-	is_deeply(
-		[mapp {++$a, ++$b} @list],
-		[2..4, 1],
-		'inc mapp odd list',
-	);
-	
-	is_deeply(
-		\@list,
-		[2..4],
-	);
+	{ # inc odd in list context
+		my @list = (1..3);
+
+		my $res = eval { [ mapp {++$a, ++$b} @list ] };
+		like($@, qr/Modification of a read-only value attempted/, 'list context inc mapp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'list context inc mapp odd list 2/2'
+		);
+	}
+
+	{ # inc odd in scalar context
+		my @list = (1..3);
+
+		my $res = eval { mapp {++$a, ++$b} @list };
+		like($@, qr/Modification of a read-only value attempted/, 'scalar context inc mapp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'scalar context inc mapp odd list 2/2'
+		);
+	}
+
+	{ # inc odd in void context
+		my @list = (1..3);
+
+		eval { mapp {++$a, ++$b} @list };
+		like($@, qr/Modification of a read-only value attempted/, 'void context inc mapp odd list 1/2');
+		
+		is_deeply(
+			\@list,
+			[2..4],
+			'void context inc mapp odd list 2/2'
+		);
+	}
 }
 
 # odd list
@@ -153,7 +197,7 @@ is_deeply(
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::mapp arguments at $file line $line\b/, 'odd list carp');
+		like($warn, qr/^Odd number of elements\b/, 'odd list carp');
 	}
 
 	{
@@ -174,7 +218,7 @@ is_deeply(
 		my $line = __LINE__ - 1;
 		is($@, '', 'odd list');
 		ok($ok, 'warning occured');
-		like($warn, qr/^Odd number of elements in &List::Pairwise::mapp arguments at $file line $line\b/, 'odd list carp');
+		like($warn, qr/^Odd number of elements\b/, 'odd list carp');
 	}
 	
 }

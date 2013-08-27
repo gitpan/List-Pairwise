@@ -1,3 +1,9 @@
+1.01  2013-08-21
+    - Internally use Lit::Util pair* XS functions when
+      available for a major speedup
+    - The last undefined element in an odd list is now
+      readonly to mimic List::Util behavior
+
 1.00  2012-03-22
     - no functional change, no need to update
     - bumping version number to 1.00

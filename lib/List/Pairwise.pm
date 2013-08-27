@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -26,16 +26,13 @@ sub import {
 }
 
 sub _carp_odd {
-	warnings::warnif(misc => 'Odd number of elements in &'. [caller(1)]->[3]. ' arguments')
+	[caller(1)]->[3] =~ /([a-z]+)$/;
+	warnings::warnif(misc => "Odd number of elements in $1")
 }
 
-sub mapp (&@) {
-	unless (@_&1) {
-		_carp_odd;
-		push @_, undef;
-		goto \&mapp;
-	}
+sub _mapp (&@) {
 	my $code = shift;
+	_carp_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -47,32 +44,47 @@ sub mapp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	no warnings;
-	
-	if (wantarray) {
-		# list context
-		map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->()} (1..@_/2)
-	}
-	elsif (defined wantarray) {
-		# scalar context
-		# count number of returned elements
-		my $i=0;
-		# force list context with =()= for the count
-		$i +=()= $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
-		$i
+
+	if (not @_&1) {
+		# Even number of elements
+		# normal case
+		if (wantarray) {
+			# list context
+			map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->()} (1..@_/2)
+		}
+		elsif (defined wantarray) {
+			# scalar context
+			# count number of returned elements
+			my $i=0;
+			# force list context with =()= for the count
+			$i +=()= $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+			$i
+		}
+		else {
+			# void context
+			() = $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		}
 	}
 	else {
-		# void context
-		() = $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		# Odd number of element
+		# Same code but last element is an alias to undef
+		if (wantarray) {
+			map {(*$caller_a, *$caller_b) = $_ ? \splice(@_, 0, 2) : \(shift, undef); $code->()} (1..@_/2, 0)
+		}
+		elsif (defined wantarray) {
+			my $i=0;
+			$i +=()= $code->() while (*$caller_a, *$caller_b) = @_==1 ? \(shift, undef) : \splice(@_, 0, 2);
+			$i
+		}
+		else {
+			() = $code->() while (*$caller_a, *$caller_b) = @_==1 ? \(shift, undef) : \splice(@_, 0, 2);
+		}
 	}
 }
 
-sub grepp (&@) {
-	unless (@_&1) {
-		_carp_odd;
-		push @_, undef;
-		goto \&grepp;
-	}
+sub _grepp (&@) {
 	my $code = shift;
+	_carp_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -85,35 +97,50 @@ sub grepp (&@) {
 
 	no warnings;
 
-	if (wantarray) {
-		# list context
-		map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->() ? ($$$caller_a, $$$caller_b) : ()} (1..@_/2)
-	}
-	elsif (defined wantarray) {
-		# scalar context
-		# count number of valid *pairs* (not elements)
-		my $i=0;
-		$code->() && ++$i while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
-		$i
-		# Returning the number of valid pairs is more intuitive than
-		# the number of elements.
-		# We have this equality:
-		# (grepp BLOCK LIST) == 1/2 * scalar(my @a = (grepp BLOCK LIST))
+	if (not @_&1) {
+		# Even number of elements
+		# normal case
+		if (wantarray) {
+			# list context
+			map {(*$caller_a, *$caller_b) = \splice(@_, 0, 2); $code->() ? ($$$caller_a, $$$caller_b) : ()} (1..@_/2)
+		}
+		elsif (defined wantarray) {
+			# scalar context
+			# count number of valid *pairs* (not elements)
+			my $i=0;
+			$code->() && ++$i while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+			$i
+			# Returning the number of valid pairs is more intuitive than
+			# the number of elements.
+			# We have this equality:
+			# (grepp BLOCK LIST) == 1/2 * scalar(my @a = (grepp BLOCK LIST))
+		}
+		else {
+			# void context
+			# same as mapp, but evaluates $code in scalar context
+			scalar $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		}
 	}
 	else {
-		# void context
-		# same as mapp, but evaluates $code in scalar context
-		scalar $code->() while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+		# Odd number of element
+		# Same code but last element is an alias to undef
+		if (wantarray) {
+			map {(*$caller_a, *$caller_b) = $_ ? \splice(@_, 0, 2) : \(shift, undef); $code->() ? ($$$caller_a, $$$caller_b) : ()} (1..@_/2, 0)
+		}
+		elsif (defined wantarray) {
+			my $i=0;
+			$code->() && ++$i while (*$caller_a, *$caller_b) = @_==1 ? \(shift, undef) : \splice(@_, 0, 2);
+			$i
+		}
+		else {
+			scalar $code->() while (*$caller_a, *$caller_b) = @_==1 ? \(shift, undef) : \splice(@_, 0, 2);
+		}
 	}
 }
 
-sub firstp (&@) {
-	unless (@_&1) {
-		_carp_odd;
-		push @_, undef;
-		goto \&firstp;
-	}
+sub _firstp (&@) {
 	my $code = shift;
+	_carp_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -125,26 +152,24 @@ sub firstp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	no warnings;
-	
-	if (wantarray) {
-		# list context
-		$code->() && return($$$caller_a, $$$caller_b) while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
+
+	if (not @_&1) {
+		# Even number of elements
+		# normal case
+		$code->() && return wantarray ? ($$$caller_a, $$$caller_b) : 1 while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
 		()
-	} else {
-		# scalar or void context
-		# return true/false
-		$code->() && return 1 while (*$caller_a, *$caller_b) = \splice(@_, 0, 2);
-		undef
+	}
+	else {
+		# Odd number of element
+		# Same code but last element is an alias to undef
+		$code->() && return wantarray ? ($$$caller_a, $$$caller_b) : 1 while (*$caller_a, *$caller_b) = @_==1 ? \(shift, undef) : (\splice(@_, 0, 2));
+		()
 	}
 }
 
 sub lastp (&@) {
-	unless (@_&1) {
-		_carp_odd;
-		push @_, undef;
-		goto \&lastp;
-	}
 	my $code = shift;
+	_carp_odd if @_&1;
 
 	# Localise $a and $b
 	# (borrowed from List-MoreUtils)
@@ -156,24 +181,35 @@ sub lastp (&@) {
 	local(*$caller_a, *$caller_b);
 
 	no warnings;
-	
-	if (wantarray) {
-		# list context
-		$code->() && return($$$caller_a, $$$caller_b) while (*$caller_a, *$caller_b) = @_ ? \splice(@_, -2) : ();
+
+	if (not @_&1) {
+		# Even number of elements
+		# normal case
+		$code->() && return wantarray ? ($$$caller_a, $$$caller_b) : 1 while (*$caller_a, *$caller_b) = @_ ? \splice(@_, -2) : ();
 		()
-	} else {
-		# scalar or void context
-		# return true/false
-		$code->() && return 1 while (*$caller_a, *$caller_b) = @_ ? \splice(@_, -2) : ();
-		undef
+	}
+	else {
+		# Odd number of element
+		# Same code but last element is an alias to undef
+		$code->() && return wantarray ? ($$$caller_a, $$$caller_b) : 1 while (*$caller_a, *$caller_b) = @_>=2 ? (\splice(@_, 0, 2)) : @_==1 ? \(shift, undef) : ();
+		()
 	}
 }
 
-sub pair {
+sub _pair {
 	_carp_odd if @_&1;
 	return @_
 		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_>>1)
 		: wantarray ? () : 0
+	;
+}
+
+sub _LU_pair {
+	goto \&List::Util::pairs if wantarray;
+	_carp_odd if @_&1;
+	return @_
+		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_>>1)
+		: 0
 	;
 }
 
@@ -185,6 +221,27 @@ sub pair {
 #sub anyp    (&@) { scalar &firstp(@_)     }
 
 # install aliases
+
+sub mapp (&@);
+sub grepp (&@);
+sub firstp (&@);
+sub pair;
+
+if (eval {require List::Util;1} && $List::Util::VERSION >= 1.31) {
+	# print "LIST UTIL\n\n";
+	*mapp = \&List::Util::pairmap;
+	*grepp = \&List::Util::pairgrep;
+	*firstp = \&List::Util::pairfirst;
+	*pair = \&_LU_pair;
+} else {
+	# print "INTERNAL\n\n";
+	*mapp = \&_mapp;
+	*grepp = \&_grepp;
+	*firstp = \&_firstp;
+	*pair = \&_pair;
+}
+
+
 sub map_pairwise (&@);
 sub grep_pairwise (&@);
 sub first_pairwise (&@);
