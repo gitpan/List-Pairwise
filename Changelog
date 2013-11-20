@@ -1,3 +1,7 @@
+1.02  2013-11-20
+    - handle $a and $b warnings exemption for perl 5.19.6
+      and beyond
+
 1.01  2013-08-21
     - Internally use Lit::Util pair* XS functions when
       available for a major speedup

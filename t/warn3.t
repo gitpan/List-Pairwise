@@ -3,8 +3,11 @@ use warnings;
 use Test::More;
 
 BEGIN {
-	@::warn = ();
-	$SIG{__WARN__} = sub {push @::warn, @_} unless $::NO_PLAN;
+	unless ($::NO_PLAN) {
+		plan(skip_all => '$a and $b warnings exemption') if $]>=5.019006;
+		@::warn = ();
+		$SIG{__WARN__} = sub {push @::warn, @_};
+	}
 }
 
 use List::Pairwise ();

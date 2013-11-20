@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -16,13 +16,17 @@ our %EXPORT_TAGS = (
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{all} } );
 
-sub import {
-	no strict qw(refs);
-	no warnings qw(once void);
+if ($] < 5.019006) {
 	# avoid "Name "main::a" used only once" warnings for $a and $b
-	*{caller().'::a'};
-	*{caller().'::b'};
-	goto &Exporter::import
+	*import = sub {
+		no strict qw(refs);
+		no warnings qw(once void);
+		*{caller().'::a'};
+		*{caller().'::b'};
+		goto &Exporter::import
+	}
+} else {
+	import Exporter 'import'
 }
 
 sub _carp_odd {
@@ -207,10 +211,7 @@ sub _pair {
 sub _LU_pair {
 	goto \&List::Util::pairs if wantarray;
 	_carp_odd if @_&1;
-	return @_
-		? map [ @_[$_*2, $_*2 + 1] ] => 0 .. ($#_>>1)
-		: 0
-	;
+	1+@_>>1
 }
 
 #sub truep   (&@) { scalar &grepp(@_)      }
@@ -220,7 +221,7 @@ sub _LU_pair {
 #sub nonep   (&@) { !&firstp(@_)           }
 #sub anyp    (&@) { scalar &firstp(@_)     }
 
-# install aliases
+# install functions
 
 sub mapp (&@);
 sub grepp (&@);
@@ -241,6 +242,7 @@ if (eval {require List::Util;1} && $List::Util::VERSION >= 1.31) {
 	*pair = \&_pair;
 }
 
+# install aliases
 
 sub map_pairwise (&@);
 sub grep_pairwise (&@);
