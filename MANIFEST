@@ -18,6 +18,7 @@ t/coverage.pl
 t/firstp.t
 t/grepp.t
 t/lastp.t
+t/listutil.t
 t/mapp.t
 t/pair.t
 t/warn1.t

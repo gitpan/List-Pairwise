@@ -48,7 +48,9 @@ resulting in a major speedup.
 New code should now preferably use List::Util functions directly, with the added
 benefit of relying on a Perl core module.
 
-=back
+B</!\> as of version 1.03 List::Pairwise does not use List::Util, because version up
+to the current one (1.39) presents a strange bug where a key can get undefined after
+an assignement (see t/listutil.t with paimap instead of mapp) B</!\>
 
 =over 4
 
@@ -144,11 +146,11 @@ grep hash subset:
 
     my %subset1 = grepp {$a =~ /^ba/} %hash;
     my %subset2 = grepp {$b < 5} %hash;
-    
+
 grep specific values:
 
     my @values = mapp {$b} grepp {$a =~ /^ba/} %hash;
-    
+
 This does not work:
 
     values grepp {$a =~ /^ba/} %hash;
@@ -183,8 +185,6 @@ setting $a and $b to each pair) and returns the last pair for
 which the expression evaluated to true.
 In scalar context, returns 1 if a valid pair was found.
 
-=back
-
 =item pair LIST
 
 Returns a list of pairs as array references.
@@ -215,8 +215,6 @@ You can use the :all tag to import all functions, including *_pairwise aliases
 
     use List::Pairwise qw(:all);
 
-=back
-
 =head1 CAVEATS
 
 In prior versions, List::Pairwise function did croak when given a list with an odd
@@ -227,7 +225,6 @@ The old behavior can be restored by making these misc warnings FATAL:
 
     use warnings FATAL => 'misc';
 
-=back
 
 =head1 TEST COVERAGE
 

@@ -4,7 +4,9 @@ use strict;
 use warnings;
 use Exporter;
 
-our $VERSION = '1.02';
+use constant USE_LIST_UTIL_VERSION => 0;
+
+our $VERSION = '1.03';
 
 our %EXPORT_TAGS = ( 
 	all => [ qw(
@@ -228,7 +230,7 @@ sub grepp (&@);
 sub firstp (&@);
 sub pair;
 
-if (eval {require List::Util;1} && $List::Util::VERSION >= 1.31) {
+if (USE_LIST_UTIL_VERSION && eval {require List::Util;1} && $List::Util::VERSION >= USE_LIST_UTIL_VERSION) {
 	# print "LIST UTIL\n\n";
 	*mapp = \&List::Util::pairmap;
 	*grepp = \&List::Util::pairgrep;

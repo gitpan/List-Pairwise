@@ -1,3 +1,10 @@
+1.03  2014-07-07
+    - Do not use List::Util anymore, until a strange bug
+      get fixed (see t/listutil.t using pairmap instead
+      of mapp)
+    - fix a few POD errors
+    - updated to Module::Install 1.08
+
 1.02  2013-11-20
     - handle $a and $b warnings exemption for perl 5.19.6
       and beyond
